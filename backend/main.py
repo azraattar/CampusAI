@@ -4,6 +4,26 @@ from supabase import create_client
 import os
 from datetime import datetime
 from werkzeug.utils import secure_filename
+import requests
+import google.generativeai as genai
+from PyPDF2 import PdfReader
+from io import BytesIO
+
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-2.5-flash")
+
+
+def extract_pdf_text(pdf_url):
+    response = requests.get(pdf_url)
+    pdf_file = BytesIO(response.content)
+
+    reader = PdfReader(pdf_file)
+    text = ""
+
+    for page in reader.pages:
+        text += page.extract_text() + "\n"
+
+    return text
 
 # =========================
 # App Setup
@@ -14,8 +34,8 @@ CORS(app)
 # =========================
 # Supabase Config
 # =========================
-SUPABASE_URL = os.getenv("SUPABASE_URL") or "https://rbgczzamjwvzhuaegcji.supabase.co"
-SUPABASE_KEY = os.getenv("SUPABASE_KEY") or "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiZ2N6emFtand2emh1YWVnY2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzgxNzIsImV4cCI6MjA4NjkxNDE3Mn0.p0V1wF6qX3qHo14I69de5LlK4O522aJ2dUrzFRsVizg"
+SUPABASE_URL = os.getenv("SUPABASE_URL") 
+SUPABASE_KEY = os.getenv("SUPABASE_KEY") 
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -168,6 +188,56 @@ def upload_policy():
             "message": "Upload failed"
         }), 500
     
+@app.route("/ai/checklist", methods=["GET"])
+def generate_checklist():
+    try:
+        # 1️⃣ Fetch policy PDFs
+        policies = supabase.table("admin_policies") \
+            .select("policy_name, file_url") \
+            .execute()
+
+        if not policies.data:
+            return jsonify({"success": False, "message": "No policies found"}), 404
+
+        combined_text = ""
+
+        # 2️⃣ Extract text from each PDF
+        for policy in policies.data:
+            pdf_text = extract_pdf_text(policy["file_url"])
+            combined_text += f"\nPolicy: {policy['policy_name']}\n{pdf_text}"
+
+        # 3️⃣ Gemini Prompt
+        prompt = f"""
+        You are an academic assistant.
+
+        Convert the following college policy documents into a clear,
+        student-friendly checklist.
+
+        Rules:
+        - Use bullet points
+        - Use simple language
+        - Include deadlines if mentioned
+        - Focus on mandatory actions only
+
+        POLICY TEXT:
+        {combined_text}
+        """
+
+        # 4️⃣ Call Gemini
+        response = model.generate_content(prompt)
+
+        return jsonify({
+            "success": True,
+            "checklist": response.text
+        })
+
+    except Exception as e:
+        print("AI ERROR:", e)
+        return jsonify({
+            "success": False,
+            "message": "Failed to generate checklist"
+        }), 500
+
 # =========================
 # Run App
 # =========================
