@@ -7,6 +7,8 @@ export default function AdminDashboard() {
   const [uploadStatus, setUploadStatus] = useState("");
   const [selectedDate, setSelectedDate] = useState(30);
   const fileInputRef = useRef(null);
+  const [checklist, setChecklist] = useState("");
+  const [generating, setGenerating] = useState(false);
 
   // =========================
   // Fetch admin stats
@@ -28,6 +30,27 @@ export default function AdminDashboard() {
   // =========================
   const handleUploadClick = () => {
     fileInputRef.current.click();
+  };
+  
+  const handleGenerateChecklist = async () => {
+    setGenerating(true);
+    setChecklist("");
+
+    try {
+      const res = await fetch("http://127.0.0.1:5000/ai/checklist");
+      const data = await res.json();
+
+      if (data.success) {
+        setChecklist(data.checklist);
+      } else {
+        setChecklist("❌ Failed to generate checklist.");
+      }
+    } catch (error) {
+      console.error(error);
+      setChecklist("❌ Server error while generating checklist.");
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const handleFileChange = async (e) => {
@@ -202,9 +225,8 @@ export default function AdminDashboard() {
               />
               {uploadStatus && (
                 <div
-                  className={`upload-status ${
-                    uploadStatus.includes("✅") ? "status-success" : "status-error"
-                  }`}
+                  className={`upload-status ${uploadStatus.includes("✅") ? "status-success" : "status-error"
+                    }`}
                 >
                   {uploadStatus}
                 </div>
@@ -225,9 +247,12 @@ export default function AdminDashboard() {
               <p className="card-description">
                 Convert uploaded policies into actionable student task lists with deadlines.
               </p>
-              <button className="btn btn-generate">
+              <button className="btn btn-generate" onClick={handleGenerateChecklist}
+              >
                 <span className="btn-text">Generate Tasks</span>
-                <span className="btn-icon">✨</span>
+                <span className="btn-icon">
+                </span>
+
               </button>
             </section>
 
@@ -333,9 +358,8 @@ export default function AdminDashboard() {
                 {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                   <div
                     key={day}
-                    className={`calendar-day ${day === 10 ? "event-day" : ""} ${
-                      day === selectedDate ? "selected-day" : ""
-                    }`}
+                    className={`calendar-day ${day === 10 ? "event-day" : ""} ${day === selectedDate ? "selected-day" : ""
+                      }`}
                     onClick={() => setSelectedDate(day)}
                   >
                     {day}

@@ -805,3 +805,18 @@ body {
     gap: 16px;
   }
 }
+.ai-output {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f5f7fb;
+  border-radius: 10px;
+  font-size: 14px;
+  white-space: pre-wrap;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.ai-output.loading {
+  background: #eef2ff;
+  font-style: italic;
+}
