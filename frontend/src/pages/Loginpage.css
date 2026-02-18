@@ -87,10 +87,7 @@
 /* ═══════════ LEFT PANEL ═══════════ */
 .login-left {
   width: 42%;
-  /* NEW: Full background image */
-  background: 
-    
-    url('Login.png') center/cover no-repeat;  /* Replace with your image URL */
+  background: url("/Login.png") center / cover no-repeat;
   padding: 40px 36px;
   display: flex;
   flex-direction: column;
