@@ -2,7 +2,7 @@ import { useState } from "react";
 import GlareHover from "./Glarehover";
 import "./Loginpage.css";
 
-const BACKEND_URL = "http://localhost:5000"; // Change to your deployed backend URL
+const BACKEND_URL = "https://campusai-ygco.onrender.com"; // Change to your deployed backend URL
 
 const StudentIcon = () => (
   <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" width="56" height="56">

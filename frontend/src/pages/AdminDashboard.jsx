@@ -14,7 +14,7 @@ export default function AdminDashboard() {
   // Fetch admin stats
   // =========================
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/admin/stats")
+    fetch("https://campusai-ygco.onrender.com/admin/stats")
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
     setChecklist("");
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/ai/checklist");
+      const res = await fetch("https://campusai-ygco.onrender.com/ai/checklist");
       const data = await res.json();
 
       if (data.success) {
@@ -64,7 +64,7 @@ export default function AdminDashboard() {
     formData.append("uploaded_by", "admin@campus.com");
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/admin/upload-policy", {
+      const res = await fetch("https://campusai-ygco.onrender.com/admin/upload-policy", {
         method: "POST",
         body: formData,
       });
