@@ -14,8 +14,8 @@ CORS(app)
 # =========================
 # Supabase Config
 # =========================
-SUPABASE_URL = os.getenv("SUPABASE_URL") or "https://rbgczzamjwvzhuaegcji.supabase.co"
-SUPABASE_KEY = os.getenv("SUPABASE_KEY") or "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJiZ2N6emFtand2emh1YWVnY2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzgxNzIsImV4cCI6MjA4NjkxNDE3Mn0.p0V1wF6qX3qHo14I69de5LlK4O522aJ2dUrzFRsVizg"
+SUPABASE_URL = os.getenv("SUPABASE_URL") 
+SUPABASE_KEY = os.getenv("SUPABASE_KEY") 
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
